@@ -10,13 +10,12 @@
      <x-backend.shared.page-container>
           
                <div class="row m-0 p-0">
-                    
                     <x-input 
                          name="year" 
                          id="year" label="{{ Settings::trans('Year','کال','سال') }}"
                          placeholder="{{ Settings::trans('Year','کال','سال') }}"
-                         wire:model="year" 
-                         type="month" 
+                         type="text" 
+                         readonly
                          col="col-sm-4" /> 
 
 
@@ -31,5 +30,16 @@
                     </div>
                </div>
      </x-backend.shared.page-container>
-     
+          @section('script')
+            <script>
+                $("#year").persianDatepicker({ 
+                    showGregorianDate: false,
+                    months: ["حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله", "میزان", "عقرب", "قوس","جدی","دلوه","حوت"],
+                    formatDate: "YYYY-MM-DD",
+                    onSelect: function () {
+                        @this.set('year',$("#year").attr("data-jdate"));
+                    }
+                });
+            </script>
+        @endsection
 </div>

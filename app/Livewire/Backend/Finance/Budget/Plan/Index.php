@@ -25,6 +25,17 @@ class Index extends Component
         session()->flash('success',\Settings::trans('Successfully deleted','چاره په بریالیتوب ترسره شوه','عملیه انجام شد'));
     }
 
+    public function mark_as_complete($id){
+        
+        $plan = BudgetPlan::where('id',$id)->first();
+
+        BudgetPlan::where('id',$id)->update([
+            'is_completed' => !$plan->is_completed,
+        ]);
+
+        session()->flash('success',\Settings::trans('Status Changed Successfully!','چاره په بریالیتوب ترسره شوه.','عملیه به کامیابی انجام شد.'));
+    }
+
     public function render()
     {
         return view('livewire.backend.finance.budget.plan.index')

@@ -42,13 +42,13 @@
                 @foreach($this->plans as $obj)
                     <tr class="">
                         <td>{{ $loop->index+1 }}</td>
-                        <td>{{ $obj->year }}</td>
+                        <td>{{ substr(Settings::change_to_hijri($obj->year),0,4) }}</td>
                         <td>{{ Settings::trans($obj->username,$obj->pa_username,$obj->pa_username) }}</td>
                         <td class="d-flex justify-content-start">
                             @if($obj->is_completed)
-                                <span class="badge badge-success">{{ Settings::trans('Completed','مکمل شوی','تکمیل شده') }}</span>
+                                <button wire:click="mark_as_complete({{ $obj->id }})" wire:confirm="Are You Sure To Mark This as Uncomplete?" class="btn btn-success btn-sm">{{ Settings::trans('Completed','تکمیل شوی','تکمیل شده') }}</button>
                             @else
-                                <span class="badge badge-warning">{{ Settings::trans('Incompleted','نا مکمل','تکمیل ناشده') }}</span>
+                                <button wire:click="mark_as_complete({{ $obj->id }})" wire:confirm="Are You Sure To Mark This as Complete?" class="btn btn-warning btn-sm">{{ Settings::trans('Incompleted','نا تکمیل','تکمیل ناشده') }}</button>
                             @endif
 
                             @hasDirectPermission('Users - Can Add')
@@ -81,17 +81,19 @@
                                 </a>
                             @endhasDirectPermission
                             
-                            @hasDirectPermission('Users - Can Add')
-                                <a wire:navigate href="{{ route('finance.budget.plan.update',$obj->id) }}" class="btn btn-info btn-sm ml-1">
-                                    <i class="fa fa-edit text-white"></i>
-                                </a>
-                            @endhasDirectPermission
+                            @if(!$obj->is_completed)
+                                @hasDirectPermission('Users - Can Add')
+                                    <a wire:navigate href="{{ route('finance.budget.plan.update',$obj->id) }}" class="btn btn-info btn-sm ml-1">
+                                        <i class="fa fa-edit text-white"></i>
+                                    </a>
+                                @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
-                                <button wire:confirm="Are you sure to delete this record?" 
-                                    wire:click="delete({{ $obj->id }})" class="btn btn-danger btn-sm ml-1">
-                                    <i class="fa fa-trash text-white"></i> </button>
-                            @endhasDirectPermission
+                                @hasDirectPermission('Users - Can Delete')
+                                    <button wire:confirm="Are you sure to delete this record?" 
+                                        wire:click="delete({{ $obj->id }})" class="btn btn-danger btn-sm ml-1">
+                                        <i class="fa fa-trash text-white"></i> </button>
+                                @endhasDirectPermission
+                            @endif
                         </td>
                     </tr>
                 @endforeach

@@ -2,12 +2,12 @@
      <x-backend.shared.page-nav>
           <x-slot:title>
                {{ Settings::trans('Approved Budget For The Year','منظور شوی بودیجه','بودیجه منظور شده') }}
-               {{ $this->get_budget_plan->year }}
+               {{ substr(Settings::change_to_hijri($this->get_budget_plan->year),0,4) }}
           </x-slot:title>
           <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('leftbar.home') }}</a></li>
           <li class="breadcrumb-item"><a wire:navigate href="{{ route('finance.budget.plan.index') }}">{{ __('leftbar.budget_plan') }}</a></li>
           <li class="breadcrumb-item active">{{ Settings::trans('Approved Budget For The Year','منظور شوی بودیجه','بودیجه منظور شده') }}
-          {{ $this->get_budget_plan->year }}</li>
+          {{ substr(Settings::change_to_hijri($this->get_budget_plan->year),0,4) }}</li>
      </x-backend.shared.page-nav>
      <x-backend.shared.page-container>
                <form wire:submit.prevent="update(Object.fromEntries(new FormData($event.target)))" id="update_codes_data">

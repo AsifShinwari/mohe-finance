@@ -12,6 +12,9 @@ class Create extends Component
     public $year; 
 
     public function store(){
+
+        $year = \Settings::change_from_hijri($this->year);
+
         $this->validate([
             'year'=>'required|unique:finance.budget_plans',
         ],[
@@ -20,7 +23,7 @@ class Create extends Component
         ]);
 
         BudgetPlan::create([
-            'year'=>$this->year,
+            'year'=>$year,
             'user_id'=>auth()->user()->id
         ]);
 

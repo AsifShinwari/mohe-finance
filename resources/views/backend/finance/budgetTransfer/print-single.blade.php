@@ -14,7 +14,7 @@
     <p class="mb-0 font-weight-bold">{{ Settings::trans('Islamic Emart of Afghanistan','د افغانستان اسلامي امارت','امارت اسلامی افغانستان') }}</p>
     <p class="mb-0 font-weight-bold">{{ Settings::trans('Ministry of Finance','د مالیی وزارت','وزارت مالیه') }}</p>
     <p class="mb-0 font-weight-bold">{{ Settings::trans('General Direct of National Budget','د ملي بودیجی عمومي ریاست','ریاست عمومی بودیجه ملی') }}</p>
-    <p class="mb-0 font-weight-bold">{{ $budget_plan->year }}</p>
+    <p class="mb-0 font-weight-bold">{{ substr(Settings::change_to_hijri($budget_plan->year),0,4) }}</p>
 </div>
 <table class="table table-sm table-bordered">
     <thead class="bg-light">

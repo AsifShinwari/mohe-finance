@@ -23,7 +23,7 @@
                 <td>{{ Settings::trans('Form#','د فورم ګڼه','نمبر فورم') }}</td>
                 <td>{{ $budget_plan->b20_form_no }}</td>
                 <td>{{ Settings::trans('Year','مالي کال','سال مالی') }}</td>
-                <td>{{ $budget_plan->year }}</td>
+                <td>{{ substr(Settings::change_to_hijri($budget_plan->year),0,4) }}</td>
             </tr>
             <tr>
                 <td>{{ Settings::trans('Created By','ترتیب شوی','ترتیب شده') }}</td>

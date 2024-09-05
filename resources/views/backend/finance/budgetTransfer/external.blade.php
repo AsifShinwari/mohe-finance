@@ -2,7 +2,7 @@
 
 
 @section('page_title')
-  {{ Settings::trans('Transfers (B10)','خارجي تعدیلات','تعدیلات خارجی') }} {{ $budget_plan->year }}
+  {{ Settings::trans('Transfers (B10)','خارجي تعدیلات','تعدیلات خارجی') }} {{ substr(Settings::change_to_hijri($budget_plan->year),0,4) }}
 @endsection
 
 @section('page_nav')

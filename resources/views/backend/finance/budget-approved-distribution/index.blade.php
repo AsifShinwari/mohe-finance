@@ -2,7 +2,7 @@
 
 
 @section('page_title')
-  {{ Settings::trans('Form-B20','د ب-۲۰ فورم','فورم ب-۲۰') }} {{ $budget_plan->year }}
+  {{ Settings::trans('Form-B20','د ب-۲۰ فورم','فورم ب-۲۰') }} {{ substr(Settings::change_to_hijri($budget_plan->year),0,4) }}
 @endsection
 
 @section('page_nav')

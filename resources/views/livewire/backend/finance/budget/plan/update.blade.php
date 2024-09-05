@@ -15,8 +15,9 @@
                          name="year" 
                          id="year" label="{{ Settings::trans('Year','کال','سال') }}"
                          placeholder="{{ Settings::trans('Year','کال','سال') }}"
-                         wire:model="year" 
-                         type="month" 
+                         readonly
+                         value="{{ Settings::change_to_hijri($year) }}"
+                         type="text" 
                          col="col-sm-4" /> 
 
 
@@ -31,5 +32,16 @@
                     </div>
                </div>
      </x-backend.shared.page-container>
-     
+          @section('script')
+            <script>
+                $("#year").persianDatepicker({ 
+                    showGregorianDate: false,
+                    months: ["حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله", "میزان", "عقرب", "قوس","جدی","دلوه","حوت"],
+                    formatDate: "YYYY-MM-DD",
+                    onSelect: function () {
+                        @this.set('year',$("#year").attr("data-jdate"));
+                    }
+                });
+            </script>
+          @endsection
 </div>
