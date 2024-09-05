@@ -106,65 +106,127 @@ class Settings {
 
     }
 
-    public static function OpertationTypes(){
+    public static function get_month_col($month){
+        switch ($month) {
+            case 'm_1':
+                return Settings::trans('Hamal','وری','حمل');
+                break;
+            case 'm_2':
+                return Settings::trans('Sawar','ثور','غویی');
+                break;
+            case 'm_3':
+                return Settings::trans('Jawza','غبرګولی','جوزا');
+                break;
+            case 'm_4':
+                return Settings::trans('Saratan','چنګاښ','سرطان');
+                break;
+            case 'm_5':
+                return Settings::trans('Asad','زمری','اسد');
+                break;
+            case 'm_6':
+                return Settings::trans('Sunbula','وږی','سنبله');
+                break;
+            case 'm_7':
+                return Settings::trans('Mezan','تله','میزان');
+                break;
+            case 'm_8':
+                return Settings::trans('Aqrab','لړم','عقرب');
+                break;
+            case 'm_9':
+                return Settings::trans('Qaous','لیندۍ','قوس');
+                break;
+            case 'm_10':
+                return Settings::trans('Jadi','مرغومی','جدی');
+                break;
+            case 'm_11':
+                return Settings::trans('Dalwa','سلواغه','دلوه');
+                break;
+            case 'm_12':
+                return Settings::trans('Hoot','کب','حوت');
+                break;
+            default:
+                return 'invalid';
+                break;
+        }
+    }
+
+    public static function months(){
         return (object)[ (object)[
-                'value'=>'new',
-                'en_name'=>'New',
-                'pa_name'=>'اصل صادر شوي',
-                'da_name'=>'سادر شده اصل',
+                'value'=>'Hamal',
+                'value_col'=>'m_1',
+                'en_name'=>'01-Hamal',
+                'pa_name'=>'۰۱-وری',
+                'da_name'=>'۰۱-حمل',
             ], (object)[
-                'value'=>'in-terms-of-communication',
-                'en_name'=>'In Terms of Communication',
-                'da_name'=>'از حیث ارتباط',
-                'pa_name'=>'د ارتباط په ډول',
+                'value'=>'Sawar',
+                'value_col'=>'m_2',
+                'en_name'=>'02-Sawar',
+                'da_name'=>'۰۲-غویی',
+                'pa_name'=>'۰۲-ثور',
             ], (object)[
-                'value'=>'maktoob-answer',
-                'en_name'=>'Maktoob Answer',
-                'pa_name'=>'مکتوب ځواب',
-                'da_name'=>'جواب مکتوب',
+                'value'=>'Jawza',
+                'value_col'=>'m_3',
+                'en_name'=>'03-Jawza',
+                'pa_name'=>'۰۳-غبرګولی',
+                'da_name'=>'۰۳-جوزا',
             ], (object)[
-                'value'=>'forward-internal-orignal',
-                'en_name'=>'Forward Internal Orignal',
-                'pa_name'=>'راجع کول - اصلی',
-                'da_name'=>'راجع - اصلی',
+                'value'=>'Saratan',
+                'value_col'=>'m_4',
+                'en_name'=>'04-Saratan',
+                'pa_name'=>'۰۴-چنګاښ',
+                'da_name'=>'۰۴-سرطان',
             ], (object)[
-                'value'=>'forward-internal-copy',
-                'en_name'=>'Forward Internal Copy',
-                'pa_name'=>'راجع کول - کاپي',
-                'da_name'=>'راجع - کاپی',
+                'value'=>'Asad',
+                'value_col'=>'m_5',
+                'en_name'=>'05-Asad',
+                'pa_name'=>'۰۵-زمری',
+                'da_name'=>'۰۵-اسد',
             ], (object)[
-                'value'=>'suggestion',
-                'en_name'=>'Suggestion',
-                'pa_name'=>'وړاندیز',
-                'da_name'=>'پیشنهاد',
+                'value'=>'Sunbula',
+                'value_col'=>'m_6',
+                'en_name'=>'06-Sunbula',
+                'pa_name'=>'۰۶-وږی',
+                'da_name'=>'۰۶-سنبله',
             ], (object)[
-                'value'=>'command',
-                'en_name'=>'Command',
-                'pa_name'=>'حکم',
-                'da_name'=>'حکم',
+                'value'=>'Mezan',
+                'value_col'=>'m_7',
+                'en_name'=>'07-Mezan',
+                'pa_name'=>'۰۷-تله',
+                'da_name'=>'۰۷-میزان',
             ], (object)[
-                'value'=>'maktoob-followup',
-                'en_name'=>'Follow Up',
-                'pa_name'=>'تعقیبي مکتوب',
-                'da_name'=>'مکتوب تعقیبی',
+                'value'=>'Aqrab',
+                'value_col'=>'m_8',
+                'en_name'=>'08-Aqrab',
+                'pa_name'=>'۰۸-لړم',
+                'da_name'=>'۰۸-عقرب',
             ], (object)[
-                'value'=>'maktoob-copy',
-                'en_name'=>'Copy',
-                'pa_name'=>'کاپي',
-                'da_name'=>'کاپی',
+                'value'=>'Qaous',
+                'value_col'=>'m_9',
+                'en_name'=>'09-Qaous',
+                'pa_name'=>'۰۹-لیندۍ',
+                'da_name'=>'۰۹-قوس',
             ],
-            //  (object)[
-            //     'value'=>'to-all',
-            //     'en_name'=>'To All',
-            //     'pa_name'=>'متحدالمال',
-            //     'da_name'=>'متحدالمال', 
-            // ],
             (object)[
-                'value'=>'to-all-original',
-                'en_name'=>'To All',
-                'pa_name'=>'متحدالمال',
-                'da_name'=>'متحدالمال',
-            ]  
+                'value'=>'Jadi',
+                'value_col'=>'m_10',
+                'en_name'=>'10-Jadi',
+                'pa_name'=>'۱۰-مرغومی',
+                'da_name'=>'۱۰-جدی',
+            ],
+            (object)[
+                'value'=>'Dalwa',
+                'value_col'=>'m_11',
+                'en_name'=>'11-Dalwa',
+                'pa_name'=>'۱۱-سلواغه',
+                'da_name'=>'۱۱-دلوه',
+            ],
+            (object)[
+                'value'=>'Hoot',
+                'value_col'=>'m_12',
+                'en_name'=>'12-Hoot',
+                'pa_name'=>'۱۲-کب',
+                'da_name'=>'۱۲-حوت',
+            ]
         ];
     }
 

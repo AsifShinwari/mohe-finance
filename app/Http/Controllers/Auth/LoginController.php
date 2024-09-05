@@ -5,7 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
- 
+use App\Models\User;
+
 class LoginController extends Controller
 {
     public function login(){
@@ -18,7 +19,16 @@ class LoginController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
- 
+        
+        $user = User::where('email', $request->email)->first();
+        if($user){
+            if($user->is_blocked){
+                return back()->withErrors([
+                    'email' => 'Your account is blocked. Please contact the administrator.',
+                ]);
+            }
+        }
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('admin/dashboard');

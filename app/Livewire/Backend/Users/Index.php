@@ -24,6 +24,27 @@ class Index extends Component
         ->latest()->paginate(10);
     }
 
+    public function lockAccount($user_id){
+        $user = User::where('id',$user_id)->first();
+
+        if($user){
+            if($user->is_blocked){
+                User::where('id',$user->id)->update([
+                    'remember_token' => '',
+                    'password' =>$user->remember_token,
+                    'is_blocked'=>false
+                ]);
+            }elseif(!$user->is_blocked){
+                User::where('id',$user->id)->update([
+                    'remember_token' => $user->password,
+                    'password' =>'',
+                    'is_blocked'=>true
+                ]);
+            }
+            session()->flash('success',\Settings::trans('Account Locked Successfully!','چاره په بریالیتوب ترسره شوه','عملیه انجام شد'));
+        }
+    }
+
     public function render()
     {
         return view('livewire.backend.users.index')
