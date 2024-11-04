@@ -1,4 +1,4 @@
-<table class="table table-sm table-bordered" id="main-tbl">
+<table class="table table-sm table-bordered mb-0" id="main-tbl">
     <thead id="tbl-head">
       <tr>
         <th class="bg-light">{{ Settings::trans('Sending#','صادره ګڼه','نمبر صادره') }}</th>
@@ -47,15 +47,30 @@
       <td>{{ $item->dr }}</td>
       <td>{{ $item->cr }}</td>
       <td class="text-center">
-        <a class="btn btn-sm btn-danger delete-btn" onclick="return confirm('Are You Sure, To Delete This Record?')" href="{{ route('finance.budget.plan.transfer.internal.delete',$item->id) }}"><i class="fa fa-trash"></i></a>
-        <button type="button" class="btn btn-sm btn-secondary print-btn" onclick="load_print_modal({{ $item->id }})"><i class="fa fa-print"></i></button>
+
+        @hasDirectPermission('B.Internal Transfer (Regular) - Delete')
+          @if(!$item->is_finalized)
+          <a class="btn btn-sm btn-danger delete-btn" onclick="return confirm('Are You Sure, To Delete This Record?')" href="{{ route('finance.budget.plan.transfer.internal.delete',$item->id) }}"><i class="fa fa-trash"></i></a>
+          @endif
+        @endhasDirectPermission
+
+        @if($item->frm_type == 'primary')
+          <button type="button" class="btn btn-sm btn-secondary print-btn" onclick="load_print_modal({{ $item->id }},'FB-B23')"><i class="fa fa-print"></i> FB</button>
+          <button type="button" class="btn btn-sm btn-secondary print-btn" onclick="load_print_modal({{ $item->id }},'A1-B23')"><i class="fa fa-print"></i> A1</button>
+        @elseif($item->frm_type == 'month')
+          <button type="button" class="btn btn-sm btn-secondary print-btn" onclick="load_print_modal({{ $item->id }},'Month')"><i class="fa fa-print"></i> Month</button>
+        @elseif($item->frm_type == 'category')
+          <button type="button" class="btn btn-sm btn-secondary print-btn" onclick="load_print_modal({{ $item->id }},'FB-B23')"><i class="fa fa-print"></i> Category</button>
+        @endif
       </td>
     </tr>
   @endforeach
 </tbody>
+@if($b20_transfers->lastPage()>1)
 <tfoot id="tbl-foot">
   <th colspan="8">
     {{ $b20_transfers->links() }}
   </th>
 </tfoot>
+@endif
 </table>

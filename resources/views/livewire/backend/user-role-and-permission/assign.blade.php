@@ -32,9 +32,9 @@
                          label="Role" />
                     
 
-                        <table class="table table-sm table-stripped">
-                            <thead>
-                                <th>Role Name</th>
+                        <table class="table table-sm table-striped">
+                            <thead class="bg-secondary">
+                                <th colspan="2">Role Name</th>
                             </thead>
                             <tbody>
                                 @foreach($this->user_roles as $item)

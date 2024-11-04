@@ -1,9 +1,37 @@
 
 <x-modal id="add-modal" modal_size="modal-lg"
-title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعدیل بودجه') }}">
+title="{{ Settings::trans('Budget Transfer','د داخلي واحدونو بودیجی تعدیل','تعدیل بودجه در واحدهای داخلی') }}">
       <div class="modal-body pt-0">
         <form action="{{ route('finance.budget.plan.approved.distributions.b10.print') }}" method="get" id="add-frm">
         <div class="row">
+          
+          <div class="col-sm-4 py-4">
+            <h6 class="text-primary mb-0">
+              <div class="custom-control custom-radio">
+                <input class="custom-control-input" checked name="chk_transfers" type="radio" id="chk-transfers-primary" value="primary">
+                <label for="chk-transfers-primary" class="custom-control-label">{{ Settings::trans('Primary Transfers','تعدیل اصل منظوری','تعدیل در اصل منظوری') }}</label>
+              </div>
+            </h6>
+          </div>
+          <div class="col-sm-4 py-4">
+            <h6 class="text-primary mb-0">
+              <div class="custom-control custom-radio">
+                <input class="custom-control-input" name="chk_transfers" type="radio" id="chk-transfers-category" value="category">
+                <label for="chk-transfers-category" class="custom-control-label">{{ Settings::trans('Category Transfers','کتګوري تعدیل','تعدیل در کتګوری') }}</label>
+              </div>
+            </h6>
+          </div>
+          <div class="col-sm-4 py-4">
+            <h6 class="text-primary mb-0">
+              <div class="custom-control custom-radio">
+                <input class="custom-control-input" name="chk_transfers" type="radio" id="chk-transfers-month" value="month">
+                <label for="chk-transfers-month" class="custom-control-label">{{ Settings::trans('Month Transfers','دمیاشت تعدیل','تعدیل در ماه') }}</label>
+              </div>
+            </h6>
+          </div>
+
+          <div class="col-sm-12 border-bottom"></div>
+
           <input type="hidden" name="budget_plan_id" id="budget_plan_id" value="{{ $budget_plan->id }}">
           <div class="col-sm-6 border-lef mt-0 pt-2">
             <div class="row m-0">
@@ -118,11 +146,12 @@ title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعد
             <div class="row m-0">
           
                 <h5 class="col-sm-12 mb-4 text-secondary">{{ Settings::trans('Code (Dr+)','د تزئید کوډ','کود تزئید') }}</h5>
-                <x-select 
+                {{--<x-select 
                   name="dr_code_org_5" 
                   id="dr_code_org_5" label="{{ Settings::trans('Organization(5)','اداره(۵)','اداره(۵)') }}"
                   col="col-sm-6"
                   required="1"
+                  readonly
                   :list="$code_org_5" 
                   :is_livewire='0'
                   value="sub_org_code"
@@ -159,12 +188,12 @@ title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعد
                   :is_livewire='0'
                   value="sub_fund_code"
                   text="sub_fund_code"
-                  default="{{ Settings::trans('Fund Code(4)','د وجه کوډ(۴)','کود وجه(۴)') }}" /> 
+                  default="{{ Settings::trans('Fund Code(4)','د وجه کوډ(۴)','کود وجه(۴)') }}" /> --}}
 
                 <x-select 
                   name="dr_code_loaction" 
                   id="dr_code_loaction" label="{{ Settings::trans('Province Code(2)','د ولایت کوډ(۲)','کود ولایت(۲)') }}"
-                  col="col-sm-6" 
+                  col="col-sm-12" 
                   required="1"
                   :list="$code_location_2" 
                   :is_livewire='0'
@@ -176,14 +205,14 @@ title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعد
                   name="dr_code_cate_1" 
                   id="dr_code_cate_1" label="{{ Settings::trans('Category Code(1)','(۱)کټګوری کوډ(۱)','کود کتګوری') }}"
                   default="{{ Settings::trans('Category Code(1)','(۱)کټګوری کوډ(۱)','کود کتګوری') }}" 
-                  col="col-sm-6" 
+                  col="col-sm-12" 
                   required="1"
                   :list="$code_category" 
                   :is_livewire='0'
                   value="code"
                   text="code" />
 
-                <x-select 
+                {{--<x-select 
                   name="dr_code_object_2" 
                   id="dr_code_object_2" label="{{ Settings::trans('Object Code(2)','د باب کوډ(۲)','کود باب(۲)') }}"
                   default="{{ Settings::trans('Object Code(2)','د باب کوډ(۲)','کود باب(۲)') }}" 
@@ -192,13 +221,13 @@ title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعد
                   :list="$code_objects_2" 
                   :is_livewire='0'
                   value="major_code"
-                  text="major_code" />
+                  text="major_code" />--}}
 
                 <x-select 
                   name="dr_month" 
                   id="dr_month" label="{{ Settings::trans('Month','میاشت','ماه') }}"
                   default="{{ Settings::trans('Month','میاشت','ماه') }}" 
-                  col="col-sm-6" 
+                  col="col-sm-12" 
                   required="1"
                   :list="Settings::months()" 
                   :is_livewire='0'
@@ -282,6 +311,27 @@ title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعد
   @push('scripts')
   <script>
     $(document).ready(function () {
+        
+      function updateValueIfReadonly(source, target) {
+        if ($(target).is('[readonly]')) {
+          $(target).val($(source).val()).change();
+        }
+      }
+
+      $(document).ready(function() {
+        $('#cr_month').change(function () {
+          updateValueIfReadonly(this, '#dr_month');
+        });
+
+        $('#cr_code_cate_1').change(function () {
+          updateValueIfReadonly(this, '#dr_code_cate_1');
+        });
+
+        $('#cr_code_loaction').change(function () {
+          updateValueIfReadonly(this, '#dr_code_loaction');
+        });
+      });
+
         $("#add-b10-info").click(function() {
           loader('show');
 
@@ -418,5 +468,50 @@ title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعد
       $('#sending_no').val('');
       $('#afmis_reg_no').val('');
     }
+
+
+
+
+    //===================Form Type Changed====================//
+    $(document).ready(function() {
+      // Trigger the function when any of the radio buttons change
+      $('input[name="chk_transfers"]').change(function() {
+        // Get the id of the selected radio button
+        var selectedRadioId = $(this).attr('id');
+        
+        // Execute different code based on the selected radio button
+        switch (selectedRadioId) {
+          case 'chk-transfers-primary':
+            // Code to execute when "Primary Transfers" is selected
+            $('#dr_month').attr('readonly', true);
+            $('#dr_code_cate_1').attr('readonly', true);
+            $('#dr_code_loaction').removeAttr('readonly');
+            break;
+            
+          case 'chk-transfers-category':
+            // Code to execute when "Category Transfers" is selected
+            $('#dr_month').attr('readonly', true);
+            $('#dr_code_loaction').attr('readonly', true);
+            $('#dr_code_cate_1').removeAttr('readonly');
+            break;
+            
+          case 'chk-transfers-month':
+            // Code to execute when "Month Transfers" is selected
+            $('#dr_code_cate_1').attr('readonly', true);
+            $('#dr_code_loaction').attr('readonly', true);
+            $('#dr_month').removeAttr('readonly');
+            break;
+            
+          default:
+            // Default action (if any)
+            $('#dr_code_cate_1').removeAttr('readonly', true);
+            $('#dr_code_loaction').removeAttr('readonly', true);
+            $('#dr_month').removeAttr('readonly');
+            break;
+        }
+      });
+      $('input[name="chk_transfers"]:checked').trigger('change');
+    });
+    
   </script>
   @endpush

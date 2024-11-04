@@ -15,11 +15,12 @@
 
             Route::group([
                 'prefix' => 'settings',
-                'as'     => 'settings.'
+                'as'     => 'settings.',
+                'middleware' => ['role:Settings']
             ], function () {        
             
-            Route::get('/index', [App\Http\Controllers\Backend\Settings\SettingsController::class,'index'])->name('index')->middleware('permission:Settings - View');;
-            Route::post('/update', [App\Http\Controllers\Backend\Settings\SettingsController::class,'update'])->name('update')->middleware('permission:Settings - Update');;
+            Route::get('/index', [App\Http\Controllers\Backend\Settings\SettingsController::class,'index'])->name('index')->middleware('permission:Settings - View');
+            Route::post('/update', [App\Http\Controllers\Backend\Settings\SettingsController::class,'update'])->name('update')->middleware('permission:Settings - Update');
 
         });
     });

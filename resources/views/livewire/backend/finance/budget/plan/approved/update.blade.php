@@ -11,7 +11,7 @@
      </x-backend.shared.page-nav>
      <x-backend.shared.page-container>
                <form wire:submit.prevent="update(Object.fromEntries(new FormData($event.target)))" id="update_codes_data">
-               <div class="row m-0 p-0">
+               <div class="row m-0 mt-3 p-4">
                     @foreach($this->get_approveds as $approved)
                          <x-input 
                               name="code{{ $approved->id }}" 
@@ -27,6 +27,7 @@
                               placeholder="{{ Settings::trans('Amount (AFN)','اندازه (افغانی)','مقدار (افغانی)') }}"
                               value="{{ $approved->amount }}"
                               type="number" 
+                              :disabled="($approved->is_finalized)"
                               col="col-sm-3" /> 
                          <x-input 
                               name="remarks{{ $approved->id }}" 
@@ -34,20 +35,45 @@
                               placeholder="{{ Settings::trans('Remarks','ملاحظات','ملاحظات') }}"
                               value="{{ $approved->remarks }}"
                               type="text" 
+                              :disabled="($approved->is_finalized)"
                               col="col-sm-7" /> 
                     @endforeach
                     
                     <div class="border-top p-2 w-100 d-flex justify-content-between">
-                         <button class="btn btn-primary" wire:loading.attr="disabled" type="submit">
-                              <i class="fa fa-save"></i> 
-                              {{ Settings::trans('Save','ثبت','ثبت') }}
-                         </button>
                          
-                         <a class="btn btn-secondary" href="{{ route('finance.budget.plan.index') }}">
-                              {{ Settings::trans('Budget List','لیست بودیجه','د بودیجی لیست') }}
+                    
+                         <div>
+                              @hasDirectPermission('Approved Budget (Regular) - Update')
+                              @if(!$this->is_finalized())
+                                   <button class="btn btn-primary" wire:loading.attr="disabled" type="submit">
+                                        <i class="fa fa-save"></i> 
+                                        {{ Settings::trans('Save','ثبت','ثبت') }}
+                                   </button>
+                              @endif
+                              @endhasDirectPermission
+
+                              @hasDirectPermission('Approved Budget (Regular) - Finalize')
+                              @if(!$this->is_finalized())
+                                   <button class="btn btn-info" wire:loading.attr="disabled" wire:click="finalized({{ $approved->budget_plan_id }},1)"
+                                   title="{{ Settings::trans('After clicking finalized, you will be not able to change the list.','وروسته له تکمیل کیدو، تاسی نشی کولای چی په بودیجه کی تغیرات راولی','بعد از تکمیل نمودن شما نمیتواند در بودجه تغیر بیاورید.') }}" 
+                                   type="button">
+                                        <i class="fas fa-lock-open"></i>
+                                        {{ Settings::trans('Finalize','تکمیل کړئ','مکمل کنید') }}
+                                   </button>
+                              @else
+                                   <button class="btn btn-success" wire:loading.attr="disabled" wire:click="finalized({{ $approved->budget_plan_id }},0)"
+                                   title="{{ Settings::trans('','','') }}" 
+                                   type="button">
+                                        <i class="fas fa-lock"></i>
+                                        {{ Settings::trans('Finalized','تکمیل شوی','مکمل شده') }}
+                                   </button>
+                              @endif
+                              @endhasDirectPermission
+                         </div>                         
+                         {{--<a class="btn btn-secondary" href="{{ route('finance.budget.plan.index') }}">
+                              {{ Settings::trans('Budget Settings','تنظیمات بودیجه','د بودیجی تنظیمات') }}
                               <i class="fa fa-arrow-left"></i> 
-                         </a>
-                         
+                         </a>--}}
                     </div>
                     </form>
                </div>

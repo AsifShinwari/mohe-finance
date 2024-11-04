@@ -12,25 +12,17 @@
 @section('contents')
   <x-backend.shared.page-container :show_card="true">
    
-        <div class="d-flex justify-content-end" id="b10-coding-block-container">  
-            
-        </div>
-        <hr>
-        <div class="p-0 pl-1 m-2">
-          <button class="btn btn-primary" id="add-btn" type="button">
-            <i class="fa fa-plus"></i>
-            {{ Settings::trans('Add','اضافه کړئ','اضافه کنید') }}
-          </button>
-          <a class="btn btn-secondary" id="print-btn" data-toggle="modal" data-target="#print-modal"
-          href="#">
-            <i class="fa fa-print"></i>
-            {{ Settings::trans('Print','پرنټ فورم ب-۲۰','پرنت فورم ب-۲۰') }}
-          </a>
+        <div class="d-flex justify-content-center" id="b10-coding-block-container">  
+             
         </div>
 
-        
+    <form id="search-frm">
+      <div class="row bg-light m-0 border py-4" id="filter-container">  
+          @include('backend.finance.budget-approved-distribution.filter')
+      </div>
+    </form>
     <form action="#" method="get" id="create-form">
-    <div class="row mb-2 d-none" id="create-box">
+    <div class="row mb-2 p-3 bg-light m-0 border d-none" id="create-box">
         <input type="hidden" name="budget_plan_id" id="budget_plan_id" value="{{ $budget_plan->id }}">
         <input type="hidden" name="edit_id" id="edit_id" value="0">
         <x-select 
@@ -165,7 +157,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-sm table-bordered" id="main-tbl">
+        <table class="table table-sm table-bordered mb-0" id="main-tbl">
             <thead id="tbl-head">
                 <th class="bg-light">{{ Settings::trans('Sub-Organization (4)','فرعي اداره (۴)','اداره فرعی (۴)') }}</th>
                 <th class="bg-light">{{ Settings::trans('Project Code(6)','د پروژی کوډ (۶)','کود پروژه (۶)') }}</th>
@@ -207,6 +199,7 @@
         $('#create-box').addClass('d-none');
         $('#add-btn').removeClass('d-none');
         $('#b10-coding-block-container').html('');
+        $('#search-frm').removeClass('d-none');
       });
 
       $('#add-btn').click(function () {
@@ -232,6 +225,7 @@
         $('#b10-coding-block-container').html('');
         $('#create-box').removeClass('d-none');
         $('#add-btn').addClass('d-none');
+        $('#search-frm').addClass('d-none');
       });
 
       $('#create-form').submit(function(e){
@@ -338,7 +332,7 @@
             success:function(res){
   
               $('#amount').val(res.amount);
-
+              $('#search-frm').addClass('d-none');
               $('#edit_id').val(res.data.id);
               $('#month').val(res.month).change();
               $('#code_cate_1').val(res.data.code_cate_1).change();

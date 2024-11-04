@@ -5,6 +5,7 @@ title="{{ Settings::trans('Budget Transfer Transaction Print','د تعدیل پ�
         <div class="row">
           <form action="{{ route('finance.budget.plan.transfer.external.save.form.info') }}" id="single-print-frm">
           <input type="hidden" name="id" id="print-id">
+          <input type="hidden" name="form_type" id="print-frm-type">
           @csrf
           <div class="col-sm-12 border-top mt-0 pt-2">
 
@@ -47,7 +48,8 @@ title="{{ Settings::trans('Budget Transfer Transaction Print','د تعدیل پ�
 
           <div class="col-sm-12 px-4 pt-4 border-top">
             <button class="btn btn-primary" onclick="print_page()" type="button">
-              <i class="fa fa-print"></i> {{ Settings::trans('Print','پرنټ','پرنت') }}
+              <i class="fa fa-print"></i> 
+              {{ Settings::trans('Print','پرنټ','پرنت') }} <span id="print-type"></span>
               <div class="spinner-border text-white spinner-border-sm d-none loader" role="status">
                 <span class="sr-only"></span>
               </div>
@@ -63,7 +65,7 @@ title="{{ Settings::trans('Budget Transfer Transaction Print','د تعدیل پ�
 
   @push('scripts')
   <script>
-    function load_print_modal(id){
+    function load_print_modal(id,type){
       loader('show');
       $.ajax({
           url: "{{ route('finance.budget.plan.transfer.internal.get.form.info') }}",
@@ -73,6 +75,8 @@ title="{{ Settings::trans('Budget Transfer Transaction Print','د تعدیل پ�
             loader('hide');
             if(data.result==200){
               $('#print-id').val(id);
+              $('#print-type').html(type);
+              $('#print-frm-type').val(type);
               $('#pr_afmis_reg_no').val(data.data.afmis_reg_no);
               $('#pr_sending_no').val(data.data.sending_no);
               $('#pr_sending_date').val(data.data.sending_date);
@@ -89,7 +93,10 @@ title="{{ Settings::trans('Budget Transfer Transaction Print','د تعدیل پ�
     }
 
     function print_page(){
+
       loader('show');
+      
+      var frm_type = $('#print-frm-type').val();
       $.ajax({
           url: "{{ route('finance.budget.plan.transfer.internal.save.form.info') }}",
           type: "POST",
@@ -98,7 +105,7 @@ title="{{ Settings::trans('Budget Transfer Transaction Print','د تعدیل پ�
             loader('hide');
             if(data.result==200){
               $('#print-modal').modal('show');
-              window.location.replace('{{ route("finance.budget.plan.transfer.internal.print.single.form.info") }}?id='+data.id);
+              window.open('{{ route("finance.budget.plan.transfer.internal.print.single.form.info") }}?id='+data.id+'&frm_type='+frm_type);
             }
           },
           error: function (jqXHR, textStatus, errorThrown) {

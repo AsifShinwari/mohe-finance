@@ -7,6 +7,7 @@
     'name' => '',
     'col' => 'col-sm-12',
     'required' => '0',
+    'disabled' => '0',
 ])
 
 <div class="{{ $col }}">
@@ -19,6 +20,7 @@
         <input 
         {{ $attributes }}
         type="{{$type}}" 
+        @if($disabled==1) disabled @endif
         class="{{ $classes }} @error($name) is-invalid @enderror" 
         id="{{ $id == '' ? $name : $id }}" 
         value="{{ $value }}"

@@ -150,6 +150,22 @@ class Settings {
         }
     }
 
+    public static function tentional_or_intentional(){
+        return (object)[
+            (object)[
+                'id'=>1,
+                'en_name'=>'Tentional',
+                'pa_name'=>'اختیاري',
+                'da_name'=>'اختیاری',
+            ],
+            (object)[
+                'id'=>0,
+                'en_name'=>'Intentional',
+                'pa_name'=>'غیراختیاري',
+                'da_name'=>'غیراختیاری',
+            ]
+        ];
+    }
     public static function months(){
         return (object)[ (object)[
                 'value'=>'Hamal',

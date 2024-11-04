@@ -3,6 +3,8 @@
 title="{{ Settings::trans('Budget Transfer','د بودیجی تعدیل','تعدیل بودجه') }}">
       <div class="modal-body pt-0">
         <form action="{{ route('finance.budget.plan.approved.distributions.b10.print') }}" method="get" id="add-frm">
+        <input type="hidden" name="is_dr_to_b10" value="no">
+
         <div class="row">
           <input type="hidden" name="budget_plan_id" id="budget_plan_id" value="{{ $budget_plan->id }}">
           <div class="col-sm-6 border-lef mt-0 pt-2">

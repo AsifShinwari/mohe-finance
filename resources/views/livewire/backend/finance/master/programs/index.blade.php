@@ -12,8 +12,10 @@
 
             <x-slot:tools>
                 <div>
+                    @hasDirectPermission('Programs - Create')
                     <a wire:navigate href="{{ route('finance.master.program.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
+                    @endhasDirectPermission
                 </div>
                 <div>
                     <div class="input-group w-100 ml-1">
@@ -52,11 +54,11 @@
                         <td>{{ Settings::trans($obj->username,$obj->pa_username,$obj->pa_username) }}</td>
                         <td class="d-flex justify-content-start">
 
-                            @hasDirectPermission('Users - Can Add')
+                            @hasDirectPermission('Programs - Update')
                                 <a wire:navigate href="{{ route('finance.master.program.edit',$obj->id) }}" class="btn btn-info btn-sm ml-1"><i class="fa fa-edit text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
+                            @hasDirectPermission('Programs - Delete')
                                 <button wire:confirm="Are you sure to delete this record?" wire:click="delete({{ $obj->id }})" class="btn btn-danger btn-sm ml-1"><i class="fa fa-trash text-white"></i> </button>
                             @endhasDirectPermission
                         </td>
@@ -65,11 +67,13 @@
             </tbody>
 
             <x-slot:links>
-                <tfoot>
-                    <th colspan="8">
-                    {{ $this->programs->links() }}
-                    </th>
-                </tfoot>
+                @if($this->programs->lastPage() > 0)
+                    <tfoot>
+                        <th colspan="8">
+                        {{ $this->programs->links() }}
+                        </th>
+                    </tfoot>
+                @endif
             </x-slot>
             
 

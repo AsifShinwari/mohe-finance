@@ -29,30 +29,48 @@
       <td class="bg-light">{{ $item->code_loaction }}</td>
       <td class="bg-light">{{ $item->code_cate_1 }}</td>
       <td class="bg-light">{{ $item->code_object_2 }}</td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Hamal')">{{ $item->m_1 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Sawar')">{{ $item->m_2 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Jawza')">{{ $item->m_3 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Saratan')">{{ $item->m_4 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Asad')">{{ $item->m_5 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Sunbula')">{{ $item->m_6 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Mezan')">{{ $item->m_7 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Aqrab')">{{ $item->m_8 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Qaous')">{{ $item->m_9 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Jadi')">{{ $item->m_10 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Dalwa')">{{ $item->m_11 }} </button></td>
-      <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Hoot')">{{ $item->m_12 }} </button></td>
+      
+      @if(!$item->is_finalized && auth()->user()->hasDirectPermission('B20 (Regular) - Update'))
+        <td><button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Hamal')">{{ $item->m_1 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Sawar')">{{ $item->m_2 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Jawza')">{{ $item->m_3 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Saratan')">{{ $item->m_4 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Asad')">{{ $item->m_5 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Sunbula')">{{ $item->m_6 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Mezan')">{{ $item->m_7 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Aqrab')">{{ $item->m_8 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Qaous')">{{ $item->m_9 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Jadi')">{{ $item->m_10 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Dalwa')">{{ $item->m_11 }} </button></td>
+        <td> <button class="btn btn-link btn-sm" onclick="edit_row({{ $item->id }},'Hoot')">{{ $item->m_12 }} </button></td>
+      @else
+        <td class="text-info">{{ $item->m_1 }}</td>
+        <td class="text-info">{{ $item->m_2 }}</td>
+        <td class="text-info">{{ $item->m_3 }}</td>
+        <td class="text-info">{{ $item->m_4 }}</td>
+        <td class="text-info">{{ $item->m_5 }}</td>
+        <td class="text-info">{{ $item->m_6 }}</td>
+        <td class="text-info">{{ $item->m_7 }}</td>
+        <td class="text-info">{{ $item->m_8 }}</td>
+        <td class="text-info">{{ $item->m_9 }}</td>
+        <td class="text-info">{{ $item->m_10 }}</td>
+        <td class="text-info">{{ $item->m_11 }}</td>
+        <td class="text-info">{{ $item->m_12 }}</td>
+      @endif
+
       <td class="bg-light">{{ $total_months }}</td>
       <td class="bg-light text-center">
-        <button class="btn btn-link btn-sm text-danger" onclick="delete_row({{ $item->id }})">
-          <i class="fa fa-trash"></i>
-        </button>
+        @if(!$item->is_finalized && auth()->user()->hasDirectPermission('B20 (Regular) - Delete'))
+          <button class="btn btn-link btn-sm text-danger" onclick="delete_row({{ $item->id }})">
+            <i class="fa fa-trash"></i>
+          </button>
+        @endif
       </td>
     </tr>
 
 @endforeach
-</tbody>
 
-    <tfoot class="bg-light" id="tbl-foot">
+    <tr class="bg-light">
       <th class="text-center" colspan="7">{{ Settings::trans('Total','مجموعه','مجموعه') }}</th>
       <th>{{ $t_m_1 }}</th>
       <th>{{ $t_m_2 }}</th>
@@ -67,4 +85,10 @@
       <th>{{ $t_m_11 }}</th>
       <th>{{ $t_m_12 }}</th>
       <th colspan="2">{{ $all_total }}</th>
-    </tfoot>
+    </tr>
+</tbody>
+<tfoot id="tbl-foot">
+  <td colspan="22">{{ $b20->links() }}</td>
+</tfoot>
+
+    

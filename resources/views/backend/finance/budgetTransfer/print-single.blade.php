@@ -78,8 +78,8 @@
             <td>{{ $transfer->b10_code_fund_4 }}</td>
             <td>{{ $transfer->b10_code_loaction }}</td>
             <td>{{ $transfer->b10_code_object_2 }}</td>
-            <td>0</td>
-            <td>{{ $transfer->cr }}</td>
+            <td>{{ $transfer->dr }}</td>
+            <td>{{ $transfer->cr }}</td> 
         </tr>
         <tr class="text-primary">
             <td>{{ $transfer->code_org_3 }}</td>
@@ -88,8 +88,8 @@
             <td>{{ $transfer->code_fund_4 }}</td>
             <td>{{ $transfer->code_loaction }}</td>
             <td>{{ $transfer->code_object_2 }}</td>
-            <td>{{ $transfer->dr }}</td>
-            <td>{{ $transfer->cr }}</td>
+            <td>{{ ($transfer->dr==0) ? $transfer->cr : '0' }}</td>
+            <td>{{ ($transfer->cr==0) ? $transfer->dr : '0' }}</td>
         </tr>
         <tr class="text-primary">
             <td>&nbsp;</td>

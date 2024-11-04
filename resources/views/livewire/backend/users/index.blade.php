@@ -12,7 +12,7 @@
 
             <x-slot:tools>
                 <div>
-                    @hasDirectPermission('Users - Can Add')
+                    @hasDirectPermission('Users - Create')
                         <a wire:navigate href="{{ route('admin.user.create') }}" class="btn btn-primary">
                             <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
                     @endhasDirectPermission
@@ -61,19 +61,19 @@
                         </td>
                         <td class="d-flex justify-content-start">
                             
-                            @hasDirectPermission('Users - Can Assign Roles')
+                            @hasDirectPermission('Users - Lock')
                                 <a wire:click="lockAccount({{$user->id}})" wire:confirm="{{ (!$user->is_bolcked) ? 'Are You Sure to lock out this account?' : 'Are You Sure To Lock This Account?' }}" href="#" class="btn {{ ($user->is_blocked) ? 'btn-danger' : 'btn-primary' }} btn-sm"><i class="fa fa-lock text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Assign Roles')
+                            @hasDirectPermission('Users - Set Permissions')
                                 <a wire:navigate href="{{ route('admin.user.roles.index',$user->id) }}" class="btn btn-primary btn-sm ml-1"><i class="fa fa-cog text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Add')
+                            @hasDirectPermission('Users - Create')
                                 <a wire:navigate href="{{ route('admin.user.edit',$user->id) }}" class="btn btn-info btn-sm ml-1"><i class="fa fa-edit text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
+                            @hasDirectPermission('Users - Delete')
                                 <a wire:navigate href="{{ route('admin.user.delete',$user->id) }}" class="btn btn-danger btn-sm ml-1"><i class="fa fa-trash text-white"></i> </a>
                             @endhasDirectPermission
                         </td>
@@ -82,11 +82,13 @@
             </tbody>
 
             <x-slot:links>
+                @if ($this->users->lastPage() > 1)
                 <tfoot>
                     <th colspan="7">
                     {{ $this->users->links() }}
                     </th>
                 </tfoot>
+                @endif
             </x-slot>
             
 

@@ -18,7 +18,6 @@ class BudgetApprovedDistributionB10 extends Model
         'code_locations.en_desc as en_prov_name',
         'code_locations.pa_desc as pa_prov_name',
         'code_locations.da_desc as da_prov_name')
-        ->orderBy('code_loaction','asc')
         ->groupBy('code_org_3','code_project_6','code_program_3','code_fund_4','code_loaction');
     }
 }

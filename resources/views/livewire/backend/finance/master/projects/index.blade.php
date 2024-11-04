@@ -12,8 +12,10 @@
 
             <x-slot:tools>
                 <div>
+                    @hasDirectPermission('Projects - Create')
                     <a wire:navigate href="{{ route('finance.master.project.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
+                    @endhasDirectPermission
                 </div>
                 <div>
                     <div class="input-group w-100 ml-1">
@@ -48,11 +50,11 @@
                         <td>{{ Settings::trans($obj->username,$obj->pa_username,$obj->pa_username) }}</td>
                         <td class="d-flex justify-content-start">
 
-                            @hasDirectPermission('Users - Can Add')
+                            @hasDirectPermission('Projects - Update')
                                 <a wire:navigate href="{{ route('finance.master.project.edit',$obj->id) }}" class="btn btn-info btn-sm ml-1"><i class="fa fa-edit text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
+                            @hasDirectPermission('Projects - Delete')
                                 <button wire:confirm="Are you sure to delete this record?" wire:click="delete({{ $obj->id }})" class="btn btn-danger btn-sm ml-1"><i class="fa fa-trash text-white"></i> </button>
                             @endhasDirectPermission
                         </td>
@@ -61,11 +63,13 @@
             </tbody>
 
             <x-slot:links>
-                <tfoot>
-                    <th colspan="8">
-                    {{ $this->code_projects->links() }}
-                    </th>
-                </tfoot>
+                @if($this->code_projects->lastPage() > 1)
+                    <tfoot>
+                        <th colspan="8">
+                        {{ $this->code_projects->links() }}
+                        </th>
+                    </tfoot>
+                @endif
             </x-slot>
             
 

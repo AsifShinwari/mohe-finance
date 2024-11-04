@@ -12,7 +12,6 @@
             :list="$code_project_6" 
             :is_livewire='0'
             value="code"
-            text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
             text="code"
             default="{{ Settings::trans('Project Code(6)','د پروژی کوډ(۶)','کود پروژه(۶)') }}" /> 
 
@@ -24,7 +23,6 @@
             :list="$code_program_3" 
             :is_livewire='0'
             value="program_code"
-            text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
             text="program_code"
             default="{{ Settings::trans('Program Code(3)','د برنامی کوډ(۳)','کود برنامه(۳)') }}" /> 
 
@@ -36,7 +34,6 @@
             :list="$code_fund_4" 
             :is_livewire='0'
             value="sub_fund_code"
-            text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
             text="sub_fund_code"
             default="{{ Settings::trans('Fund Code(4)','د وجه کوډ(۴)','کود وجه(۴)') }}" /> 
 
@@ -61,7 +58,6 @@
             :list="$code_objects_2" 
             :is_livewire='0'
             value="major_code"
-            text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
             text="major_code" />
 
           <div class="col-sm-12">

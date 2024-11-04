@@ -32,7 +32,7 @@ class CodeLocations extends Model
         ->orderBy('prov_code','asc');
     }
     
-    public static function get_code_3(){
+    public static function get_code_4(){
         return CodeLocations::whereNotNull('dist_code')
         ->where('is_used',true)
         ->groupBy('dist_code')

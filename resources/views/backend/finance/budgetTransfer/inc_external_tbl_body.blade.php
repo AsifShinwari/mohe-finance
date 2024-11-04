@@ -1,4 +1,4 @@
-<table class="table table-sm table-bordered" id="main-tbl">
+<table class="table table-sm table-bordered mb-0" id="main-tbl">
     <thead id="tbl-head">
       <tr>
         <th class="bg-light">{{ Settings::trans('Sending#','صادره ګڼه','نمبر صادره') }}</th>
@@ -46,15 +46,23 @@
       <td>{{ $item->dr }}</td>
       <td>{{ $item->cr }}</td>
       <td class="text-center">
-        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ $item->id }}"><i class="fa fa-trash"></i></button>
+        
+        @hasDirectPermission('B.External Transfer (Regular) - Delete')
+          @if(!$item->is_finalized)
+            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ $item->id }}"><i class="fa fa-trash"></i></button>
+          @endif
+        @endhasDirectPermission
+
         <button type="button" class="btn btn-sm btn-secondary print-btn" onclick="load_print_modal({{ $item->id }})"><i class="fa fa-print"></i></button>
       </td>
     </tr>
   @endforeach
 </tbody>
-<tfoot id="tbl-foot">
-  <th colspan="8">
-    {{ $b10_transfers->links() }}
-  </th>
-</tfoot>
+  @if($b10_transfers->lastPage()>1)
+    <tfoot id="tbl-foot">
+      <th colspan="8">
+        {{ $b10_transfers->links() }}
+      </th>
+    </tfoot>
+  @endif
 </table>

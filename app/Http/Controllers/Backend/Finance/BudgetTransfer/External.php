@@ -31,11 +31,24 @@ class External extends Controller
         ->where('budget_approved_b10_transfers.budget_plan_id',$budget_plan_id)
         ->orderBy('budget_approved_b10_transfers.id','desc')->paginate(10);
 
+        $is_finalized = $this->is_finalized($budget_plan_id);
+
         return view('backend.finance.budgetTransfer.external',
         compact('budget_plan','code_org_3',
         'code_project_6','code_program_3',
         'code_fund_4','code_location_2',
-        'code_objects_2','b10_transfers'));
+        'code_objects_2','b10_transfers','is_finalized'));
+    }
+
+    public function is_finalized($budget_plan_id){
+        $exist = BudgetApprovedB10Transfer::where('budget_approved_b10_transfers.budget_plan_id',$budget_plan_id)
+        ->first();
+
+        if($exist){
+            return $exist->is_finalized;
+        }
+
+        return false;
     }
 
     public function get_code_amount(Request $req){
@@ -69,7 +82,6 @@ class External extends Controller
     }
 
     public function store(Request $req){
-        
         $b10_row = BudgetApprovedDistributionB10::where('budget_plan_id',$req->budget_plan_id)
         ->where('code_loaction',$req->cr_code_loaction)
         ->where('code_fund_4',$req->cr_code_fund_4)
@@ -77,9 +89,10 @@ class External extends Controller
         ->where('code_program_3',$req->cr_code_program_3)
         ->where('code_project_6',$req->cr_code_project_6)
         ->first();
-
         if(isset($req->is_dr_to_b10)){
+
             if($req->is_dr_to_b10=='yes'){
+                return response()->json('is_dr_to_b10==Yes');
 
                 $dr = $req->dr_amount;
                 $cr = 0;
@@ -93,6 +106,7 @@ class External extends Controller
                 ->first();
 
                 if(!$b10_row){
+                return response()->json('!b10_row');
                     
                     $recentInsertedId = BudgetApprovedDistributionB10::insertGetId([
                         'code_fund_4'=>$req->dr_code_fund_4,
@@ -116,9 +130,10 @@ class External extends Controller
         }
 
         if($b10_row){
-
             if(isset($req->is_dr_to_b10)){
+
                 if($req->is_dr_to_b10=='yes'){
+
                     BudgetApprovedB10Transfer::insert([
                         'budget_approved_distributions_b10_id'=>$b10_row->id,
                         'budget_plan_id'=>$req->budget_plan_id,
@@ -138,6 +153,7 @@ class External extends Controller
                         'user_id'=>auth()->user()->id,
                     ]);
                 }else{
+
                     BudgetApprovedB10Transfer::insert([
                         'budget_approved_distributions_b10_id'=>$b10_row->id,
                         'budget_plan_id'=>$req->budget_plan_id,
@@ -202,5 +218,41 @@ class External extends Controller
         $budget_plan = BudgetPlan::where('id',$budget_plan_id)->first();
 
         return view('backend.finance.budgetTransfer.print-all',compact('transfers','budget_plan'));
+    }
+
+    public function finalized(Request $req){
+
+        $exist = BudgetApprovedB10Transfer::where('budget_plan_id',$req->budget_plan_id)->first();
+        $is_finalized = false;
+        if($exist){
+            BudgetApprovedB10Transfer::where('budget_plan_id',$req->budget_plan_id)
+            ->update([
+                'is_finalized'=>!$exist->is_finalized,
+            ]);
+            
+            if(!$exist->is_finalized){
+                $is_finalized = true;
+            }
+            
+            $b10_transfers = BudgetApprovedB10Transfer::get_list()
+            ->where('budget_approved_b10_transfers.budget_plan_id',$req->budget_plan_id)
+            ->orderBy('budget_approved_b10_transfers.id','desc')->paginate(10);
+            
+            $html = view('backend.finance.budgetTransfer.inc_external_tbl_body',['b10_transfers'=>$b10_transfers])->render();
+
+            return response()->json([
+                'code'=>200,
+                'type'=>'success',
+                'msg'=>'Operation completed successfully',
+                'html'=>$html,
+                'is_finalized'=>$is_finalized,
+            ]);
+        }else{
+            return response()->json([
+                'code'=>500,
+                'type'=>'error',
+                'msg'=>'No any record found.',
+            ]);
+        }
     }
 }

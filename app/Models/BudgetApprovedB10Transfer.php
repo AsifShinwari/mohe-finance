@@ -15,11 +15,6 @@ class BudgetApprovedB10Transfer extends Model
     public static function get_list($search=null, $is_deleted=false){
         return BudgetApprovedB10Transfer::join('mohe_auth_db.users','budget_approved_b10_transfers.user_id','mohe_auth_db.users.id')
         ->join('budget_approved_distributions_b10','budget_approved_b10_transfers.budget_approved_distributions_b10_id','budget_approved_distributions_b10.id')
-        
-        // ->when($search,function($qry) use($search){
-        //     $qry->orWhere('budget_approveds.year','like','%'.$search.'%');
-        // })
-
         ->select('budget_approved_b10_transfers.*','users.name as username','users.pa_name as pa_username',
         'budget_approved_distributions_b10.code_org_3 as b10_code_org_3',
         'budget_approved_distributions_b10.code_project_6 as b10_code_project_6',

@@ -3,7 +3,7 @@
         {{ $tools }}
     </div>
     <div class="table-responsive" style="min-height: 50vh;">
-        <table class="table table-sm table-hover">
+        <table class="table table-sm table-hover table-bordered mb-0">
             {{ $slot }}
 
             {{ $links }}

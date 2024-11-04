@@ -33,11 +33,24 @@ class Internal extends Controller
         ->where('budget_approved_b20_transfers2.budget_plan_id',$budget_plan_id)
         ->orderBy('budget_approved_b20_transfers2.id','desc')->paginate(10);
 
+        $is_finalized = $this->is_finalized($budget_plan_id);
+
         return view('backend.finance.budgetTransfer.internal.index',
         compact('budget_plan','code_org_5','code_category',
         'code_project_6','code_program_3',
         'code_fund_4','code_location_2',
-        'code_objects_2','b20_transfers'));
+        'code_objects_2','b20_transfers','is_finalized'));
+    }
+
+    public function is_finalized($budget_plan_id){
+        $exist = BudgetApprovedB20Transfer::where('budget_plan_id',$budget_plan_id)
+        ->first();
+
+        if($exist){
+            return $exist->is_finalized;
+        }
+
+        return false;
     }
 
     public function get_code_amount(Request $req){
@@ -75,32 +88,6 @@ class Internal extends Controller
     }
 
     public function store(Request $req){
-        // {
-        //     "budget_plan_id": "1",
-        //     "cr_code_org_5": "12800",
-        //     "cr_code_project_6": "00000",
-        //     "cr_code_program_3": "282",
-        //     "cr_code_fund_4": "2000",
-        //     "cr_code_loaction": "1",
-        //     "cr_code_cate_1": "0",
-        //     "cr_code_object_2": "21",
-        //     "cr_month": "m_1",
-        //     "cr_amount": "100",
-        //     "dr_code_org_5": "12800",
-        //     "dr_code_project_6": "00000",
-        //     "dr_code_program_3": "281",
-        //     "dr_code_fund_4": "2000",
-        //     "dr_code_loaction": "1",
-        //     "dr_code_cate_1": "0",
-        //     "dr_code_object_2": "21",
-        //     "dr_month": "m_2",
-        //     "dr_amount": "10",
-        //     "afmis_reg_no": null,
-        //     "sending_no": null,
-        //     "sending_date": null,
-        //     "needs_in_letters": null,
-        //     "prescription_gnrl_drctr": null
-        // }
       
         $b20_row = BudgetApprovedDistribution::where('budget_plan_id',$req->budget_plan_id)
         ->where('code_loaction',$req->cr_code_loaction)
@@ -114,16 +101,18 @@ class Internal extends Controller
 
        
         if($b20_row){
+
             BudgetApprovedB20Transfer::insert([
                 'budget_approved_b20_row_id'=>$b20_row->id,
+                'frm_type'=>$req->chk_transfers,
                 'budget_plan_id'=>$req->budget_plan_id,
-                'code_org_4'=>$req->dr_code_org_5,
+                'code_org_4'=>$req->cr_code_org_5,
                 'code_cate_1'=>$req->dr_code_cate_1,
-                'code_project_6'=>$req->dr_code_project_6,
-                'code_program_3'=>$req->dr_code_program_3,
-                'code_fund_4'=>$req->dr_code_fund_4,
+                'code_project_6'=>$req->cr_code_project_6,
+                'code_program_3'=>$req->cr_code_program_3,
+                'code_fund_4'=>$req->cr_code_fund_4,
                 'code_loaction'=>$req->dr_code_loaction,
-                'code_object_2'=>$req->dr_code_object_2,
+                'code_object_2'=>$req->cr_code_object_2,
                 'from_month'=>$req->cr_month,
                 'to_month'=>$req->dr_month,
                 'cr'=>0,
@@ -180,10 +169,18 @@ class Internal extends Controller
     }
 
     public function print_single_form_info(Request $req){
+        $frm_type = $req->frm_type;
         $transfer = BudgetApprovedB20Transfer::get_list()->where('budget_approved_b20_transfers2.id',$req->id)->first();
         $budget_plan = BudgetPlan::where('id',$transfer->budget_plan_id)->first();
 
-        return view('backend.finance.budgetTransfer.internal.print-single',compact('transfer','budget_plan'));
+        if($frm_type=='FB-B23'){
+            return view('backend.finance.budgetTransfer.internal.print-single-fb-b23',compact('transfer','budget_plan'));
+        }elseif($frm_type=='A1-B23'){
+            return view('backend.finance.budgetTransfer.internal.print-single-a1-b23',compact('transfer','budget_plan'));
+        }elseif($frm_type=='Month'){
+            return view('backend.finance.budgetTransfer.internal.print-single-fb-b23-month',compact('transfer','budget_plan'));
+        }
+
     }
 
     public function print_all(Request $req,$budget_plan_id){
@@ -191,5 +188,41 @@ class Internal extends Controller
         $budget_plan = BudgetPlan::where('id',$budget_plan_id)->first();
 
         return view('backend.finance.budgetTransfer.internal.print-all',compact('transfers','budget_plan'));
+    }
+
+    public function finalized(Request $req){
+
+        $exist = BudgetApprovedB20Transfer::where('budget_plan_id',$req->budget_plan_id)->first();
+        $is_finalized = false;
+        if($exist){
+            BudgetApprovedB20Transfer::where('budget_plan_id',$req->budget_plan_id)
+            ->update([
+                'is_finalized'=>!$exist->is_finalized,
+            ]);
+            
+            if(!$exist->is_finalized){
+                $is_finalized = true;
+            }
+            
+            $b20_transfers = BudgetApprovedB20Transfer::get_list()
+            ->where('budget_approved_b20_transfers2.budget_plan_id',$req->budget_plan_id)
+            ->orderBy('budget_approved_b20_transfers2.id','desc')->paginate(10);
+            
+            $html = view('backend.finance.budgetTransfer.internal.inc_tbl_body',['b20_transfers'=>$b20_transfers])->render();
+
+            return response()->json([
+                'code'=>200,
+                'type'=>'success',
+                'msg'=>'Operation completed successfully',
+                'html'=>$html,
+                'is_finalized'=>$is_finalized,
+            ]);
+        }else{
+            return response()->json([
+                'code'=>500,
+                'type'=>'error',
+                'msg'=>'No any record found.',
+            ]);
+        }
     }
 }

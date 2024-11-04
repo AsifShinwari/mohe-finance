@@ -24,4 +24,17 @@ class CodeProject extends Model
         })
         ->select('code_projects.*','users.name as username','users.pa_name as pa_username');
     }
+
+    public static function get_list_6($search=null, $is_used=false){
+        return CodeProject::join('mohe_auth_db.users','code_projects.user_id','mohe_auth_db.users.id')
+        ->when($search,function($qry) use($search){
+            $qry->orWhere('code','like','%'. $search.'%')
+            ->orWhere('en_desc','like','%'. $search.'%')
+            ->orWhere('pa_desc','like','%'. $search.'%')
+            ->orWhere('da_desc','like','%'. $search.'%');
+        })->when($is_used,function($qry) use($is_used){
+            $qry->where('is_used',$is_used);
+        })
+        ->select('code_projects.*','users.name as username','users.pa_name as pa_username');
+    }
 }

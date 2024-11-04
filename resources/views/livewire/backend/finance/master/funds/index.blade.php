@@ -12,8 +12,10 @@
 
             <x-slot:tools>
                 <div>
+                    @hasDirectPermission('Funds - Create')
                     <a wire:navigate href="{{ route('finance.master.funds.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
+                    @endhasDirectPermission
                 </div>
                 <div>
                     <div class="input-group w-100 ml-1">
@@ -54,11 +56,11 @@
                         <td>{{ Settings::trans($fund->username,$fund->pa_username,$fund->pa_username) }}</td>
                         <td class="d-flex justify-content-start">
 
-                            @hasDirectPermission('Users - Can Add')
+                            @hasDirectPermission('Funds - Update')
                                 <a wire:navigate href="{{ route('finance.master.funds.edit',$fund->id) }}" class="btn btn-info btn-sm ml-1"><i class="fa fa-edit text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
+                            @hasDirectPermission('Funds - Delete')
                                 <button wire:confirm="Are you sure to delete this record?" wire:click="delete({{ $fund->id }})" class="btn btn-danger btn-sm ml-1"><i class="fa fa-trash text-white"></i> </button>
                             @endhasDirectPermission
                         </td>
@@ -67,11 +69,13 @@
             </tbody>
 
             <x-slot:links>
-                <tfoot>
-                    <th colspan="8">
-                    {{ $this->funds->links() }}
-                    </th>
-                </tfoot>
+                @if($this->funds->lastPage() > 1)
+                    <tfoot>
+                        <th colspan="8">
+                        {{ $this->funds->links() }}
+                        </th>
+                    </tfoot>
+                @endif
             </x-slot>
             
 

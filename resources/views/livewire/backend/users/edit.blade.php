@@ -8,7 +8,7 @@
           <li class="breadcrumb-item active">Edit User</li>
      </x-backend.shared.page-nav>
      <x-backend.shared.page-container>
-                <div class="row m-0 p-0">
+                <div class="row m-0 p-4">
 
                     <div class="col-sm-3">
                          <label class="mb-0" style="display:block;">User Image</label>

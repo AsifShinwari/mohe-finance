@@ -1,11 +1,11 @@
 @if(app()->getLocale()=='en')
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="{{ asset('assets/backend/google-fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/custom.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/plugins/summernote/summernote-bs4.min.css') }}">
 @else
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="{{ asset('assets/backend/google-fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/rtl-assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/backend/rtl-assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
@@ -49,5 +49,12 @@
         touch-action: none;
         opacity:0.6;
         cursor:no-drop;
+    }
+
+    .pagination{
+        margin-bottom: 0px !important;
+    }
+    .small .text-muted{
+        margin-bottom: 0px !important;
     }
 </style>

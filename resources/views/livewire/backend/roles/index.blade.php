@@ -12,7 +12,7 @@
 
             <x-slot:tools>
                 <div>
-                    @hasDirectPermission('Users Roles - Can Add')
+                    @hasDirectPermission('Roles - Create')
                     <a wire:navigate href="{{ route('admin.roles.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
                     @endhasDirectPermission
@@ -47,13 +47,15 @@
                         <td>{{ $loop->index+1 }}</td>
                         <td>{{ $role->name }}</td>
                         <td>
+                            @hasDirectPermission('Roles - Can Assign Persmission')
                             <x-btn-edit wire:navigate route="admin.roles.assign" class="btn btn-sm btn-primary" :param="$role->id">Permissions</x-btn-edit>
+                            @endhasDirectPermission
 
-                            @hasDirectPermission('Users Roles - Can Add')
+                            @hasDirectPermission('Roles - Update')
                                 <x-btn-edit wire:navigate route="admin.roles.edit" :param="$role->id" />
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users Roles - Can Delete')
+                            @hasDirectPermission('Roles - Delete')
                                 <x-btn-delete wire:confirm="Are You Sure To Delete This Record?" wire:click="delete({{ $role->id }})" />
                             @endhasDirectPermission
 
@@ -63,7 +65,14 @@
             </tbody>
 
             <x-slot:links>
-                {{ $this->roles->links() }}
+                <tfoot>
+                    <td colspan="3">
+                        @if($this->roles->lastPage() > 1)
+                            {{ $this->roles->links() }}
+                        @endif
+                    </td>
+                </tfoot>
+                
             </x-slot>
 
         </x-backend.shared.table>

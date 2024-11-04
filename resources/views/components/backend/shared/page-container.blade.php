@@ -14,7 +14,7 @@
                             <x-backend.shared.alert.error />
                             <x-backend.shared.validation.all />
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-1">
                             {{ $slot }}
                         </div>
                     </div>

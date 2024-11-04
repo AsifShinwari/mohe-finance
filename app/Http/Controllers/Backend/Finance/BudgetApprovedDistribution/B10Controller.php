@@ -20,10 +20,10 @@ class B10Controller extends Controller
 {
     public function index(Request $request,$budget_plan_id){
 
-        $code_org_3 = CodeOrg::get_code_3()->get(); //get sub-organization code 3
+        $code_org_3 = CodeOrg::get_code_3()->where('ministry_code','128')->get(); //get sub-organization code 3
         $code_project_6 = CodeProject::get_list(null,true)->get(); //get project code 6
         $code_program_3 = CodeProgram::get_code_3()->get(); //get program code 3
-        $code_fund_4 = CodeFund::get_code_4()->get(); //get fund code 4
+        $code_fund_4 = CodeFund::get_code_4()->where('sub_fund_code','!=','2000')->get(); //get fund code 4
         $code_location_2 = CodeLocations::get_code_2()->get(); //get provinces code 4
         // $code_category_1 = CodeCategory::get(); //get Category code 1
         $code_objects_2 = CodeObject::get_code_2()->get(); //get Object 2 code 1
@@ -31,13 +31,65 @@ class B10Controller extends Controller
 
         $budget_plan = BudgetPlan::where('id',$budget_plan_id)->first();
         $b10 = BudgetApprovedDistributionB10::get_b10_form()
-        ->where('budget_plan_id',$budget_plan_id)->get();
+        ->where('budget_plan_id',$budget_plan_id)
+        ->orderBy('code_loaction','asc')
+        ->orderBy('budget_approved_distributions_b10.id','desc')
+        ->paginate(8);
+
+        $is_finalized = false;
+        if(isset($b10[0])){
+            $is_finalized = $b10[0]->is_finalized;
+        }
 
         return view('backend.finance.budget-approved-distribution-b10.index',
         compact('budget_plan','b10','code_org_3',
         'code_project_6','code_program_3',
         'code_fund_4','code_location_2',
-        'code_objects_2','budget_approveds'));
+        'code_objects_2','budget_approveds','is_finalized'));
+    }
+
+    public function filter(Request $request){
+
+        $f_code_project_6 = $request->f_code_project_6;
+        $f_code_program_3 = $request->f_code_program_3;
+        $f_code_fund_4 = $request->f_code_fund_4;
+        $f_code_loaction = $request->f_code_loaction;
+        $f_code_object_2 = $request->f_code_object_2;
+        $budget_plan_id = $request->budget_plan_id;
+
+        $b10 = BudgetApprovedDistributionB10::get_b10_form()
+        ->where('budget_plan_id',$request->budget_plan_id)
+        ->when($f_code_project_6,function($qry) use($f_code_project_6){
+            $qry->where('code_project_6',$f_code_project_6);
+        })
+        ->when($f_code_program_3,function($qry) use($f_code_program_3){
+            $qry->where('code_program_3',$f_code_program_3);
+        })
+        ->when($f_code_fund_4,function($qry) use($f_code_fund_4){
+            $qry->where('code_fund_4',$f_code_fund_4);
+        })
+        ->when($f_code_loaction,function($qry) use($f_code_loaction){
+            $qry->where('code_loaction',$f_code_loaction);
+        })
+        ->when($f_code_object_2,function($qry) use($f_code_object_2){
+            $qry->where('code_object_2',$f_code_object_2)
+            ->where('amount','!=',0);
+        })
+        ->orderBy('code_loaction','asc')
+        ->orderBy('budget_approved_distributions_b10.id','desc')->paginate(8);
+
+         $budget_approveds = BudgetApproved::where('budget_plan_id',$request->budget_plan_id)->get();//approved budget details
+         $budget_plan = BudgetPlan::where('id',$request->budget_plan_id)->first();
+        $code_objects_2 = CodeObject::get_code_2()->get(); //get Object 2 code 1
+         $html_major_codes = view('backend.finance.budget-approved-distribution-b10.calculate_major_codes',[
+             'budget_approveds'=>$budget_approveds,
+             'budget_plan'=>$budget_plan,
+         ])->render();
+ 
+         $html2 = view('backend.finance.budget-approved-distribution-b10.table_body',['b10'=>$b10,'code_objects_2'=>$code_objects_2,'is_object_code_filterd'=>$f_code_object_2])->render();
+         
+         return response()->json(['result'=>200,'html'=>$html2,'html_major_codes'=>$html_major_codes]);
+
     }
 
     public static function get_major_amount($budget_plan_id,$code_org_3,$code_project_6,$code_program_3,$code_fund_4,$code_loaction,$code_object_2){
@@ -70,7 +122,18 @@ class B10Controller extends Controller
         }
     }
 
+    public function is_finalized($budget_plan_id){
+        $exist = BudgetApprovedDistributionB10::where('budget_plan_id',$budget_plan_id)->first();
+        if($exist){
+            return $exist->is_finalized;
+        }
+        return false;
+    }
+
     public function store(Request $request){
+        if($this->is_finalized($request->budget_plan_id)){
+            return response()->json(['result'=>403,'msg'=>'This action is finalized, you are not able to do this action!']); 
+        }
         if($request->edit_id==0){ //create new row
              $request->validate([
                  'code_fund_4'=>'required',
@@ -132,7 +195,11 @@ class B10Controller extends Controller
              ]);
          }
  
-        $b10 = BudgetApprovedDistributionB10::get_b10_form()->where('budget_plan_id',$request->budget_plan_id)->get();
+        $b10 = BudgetApprovedDistributionB10::get_b10_form()
+        ->where('budget_plan_id',$request->budget_plan_id)
+        ->orderBy('budget_approved_distributions_b10.id','desc')
+        ->paginate(8);
+
          $budget_approveds = BudgetApproved::where('budget_plan_id',$request->budget_plan_id)->get();//approved budget details
          $budget_plan = BudgetPlan::where('id',$request->budget_plan_id)->first();
         $code_objects_2 = CodeObject::get_code_2()->get(); //get Object 2 code 1
@@ -146,7 +213,7 @@ class B10Controller extends Controller
          return response()->json(['result'=>200,'html'=>$html2,'html_major_codes'=>$html_major_codes]);
      }
 
-     public static function calculate_code_total($budget_plan_id,$code_object_2){
+    public static function calculate_code_total($budget_plan_id,$code_object_2){
 
         $b10 = BudgetApprovedDistributionB10::where('budget_plan_id',$budget_plan_id)
         ->where('code_object_2',$code_object_2)
@@ -209,7 +276,12 @@ class B10Controller extends Controller
         $is_exist = BudgetApprovedDistributionB10::where('id',$request->id)->delete();
 
         if($is_exist){
-            $b10 = BudgetApprovedDistributionB10::get_b10_form()->where('budget_plan_id',$request->budget_plan_id)->get();
+            $b10 = BudgetApprovedDistributionB10::get_b10_form()
+            ->where('budget_plan_id',$request->budget_plan_id)
+            ->orderBy('code_loaction','asc')
+            ->orderBy('budget_approved_distributions_b10.id','desc')
+            ->paginate(8);
+            
             $budget_approveds = BudgetApproved::where('budget_plan_id',$request->budget_plan_id)->get();//approved budget details
             $budget_plan = BudgetPlan::where('id',$request->budget_plan_id)->first();
             $code_objects_2 = CodeObject::get_code_2()->get(); //get Object 2 code 1
@@ -251,12 +323,13 @@ class B10Controller extends Controller
         ->when($code_object_2,function($qry) use ($code_object_2){
             $qry->where('code_object_2',$code_object_2)
             ->where('amount','!=',0);
-        })->get();
+        })
+        ->orderBy('code_loaction','asc')
+        ->orderBy('budget_approved_distributions_b10.id','desc')
+        ->get();
 
         $budget_plan = BudgetPlan::where('id',$req->budget_plan_id)->first();
         $code_objects_2 = CodeObject::get_code_2()->get(); //get Object 2 code 1
-
-        // budget_plan_id=1&code_project_6=&code_program_3=&code_fund_4=&code_loaction=&code_object_2=
 
         return view('backend.finance.budget-approved-distribution-b10.print.index',compact('b10','budget_plan','code_objects_2','code_object_2'));
     }
@@ -285,6 +358,47 @@ class B10Controller extends Controller
         $budget_plan = BudgetPlan::where('id',$req->budget_plan_id)->first();
         
         return response()->json($budget_plan);
+    }
+
+    public function finalize(Request $req){
+
+        $exist = BudgetApprovedDistributionB10::where('budget_plan_id',$req->budget_plan_id)->first();
+
+        if($exist){
+            BudgetApprovedDistributionB10::where('budget_plan_id',$req->budget_plan_id)
+            ->update([
+                'is_finalized'=>!$exist->is_finalized,
+            ]);
+
+            $is_finalized = false;
+            if(!$exist->is_finalized){
+                $is_finalized = true;
+            }
+
+            $b10 = BudgetApprovedDistributionB10::get_b10_form()
+            ->where('budget_plan_id',$req->budget_plan_id)
+            ->orderBy('code_loaction','asc')
+            ->orderBy('budget_approved_distributions_b10.id','desc')
+            ->paginate(8);
+            $code_objects_2 = CodeObject::get_code_2()->get();
+
+            $html = view('backend.finance.budget-approved-distribution-b10.table_body',['b10'=>$b10,'code_objects_2'=>$code_objects_2])->render();
+
+            return response()->json([
+                'code'=>200,
+                'type'=>'success',
+                'msg'=>'Operation completed successfully',
+                'html'=>$html,
+                'is_finalized'=>$is_finalized
+            ]);
+        }else{
+            return response()->json([
+                'code'=>500,
+                'type'=>'error',
+                'msg'=>'No any record found.',
+            ]);
+        }
+
     }
 
 }

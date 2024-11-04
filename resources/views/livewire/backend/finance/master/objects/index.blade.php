@@ -1,10 +1,10 @@
 <div>
     <x-backend.shared.page-nav>
           <x-slot:title>
-               {{ __('master.fund.index') }}
+               {{ __('master.object.index') }}
           </x-slot:title>
           <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('leftbar.home') }}</a></li>
-          <li class="breadcrumb-item active">{{ __('master.fund.index') }}</li>
+          <li class="breadcrumb-item active">{{ __('master.object.index') }}</li>
      </x-backend.shared.page-nav>
 
     <x-backend.shared.page-container>
@@ -12,8 +12,10 @@
 
             <x-slot:tools>
                 <div>
+                @hasDirectPermission('Object Codes - List')
                     <a wire:navigate href="{{ route('finance.master.objects.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
+                @endhasDirectPermission
                 </div>
                 <div>
                     <div class="input-group w-100 ml-1">
@@ -54,11 +56,11 @@
                         <td>{{ Settings::trans($obj->username,$obj->pa_username,$obj->pa_username) }}</td>
                         <td class="d-flex justify-content-start">
 
-                            @hasDirectPermission('Users - Can Add')
+                            @hasDirectPermission('Object Codes - Update')
                                 <a wire:navigate href="{{ route('finance.master.objects.edit',$obj->id) }}" class="btn btn-info btn-sm ml-1"><i class="fa fa-edit text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
+                            @hasDirectPermission('Object Codes - Delete')
                                 <button wire:confirm="Are you sure to delete this record?" wire:click="delete({{ $obj->id }})" class="btn btn-danger btn-sm ml-1"><i class="fa fa-trash text-white"></i> </button>
                             @endhasDirectPermission
                         </td>
@@ -67,11 +69,13 @@
             </tbody>
 
             <x-slot:links>
-                <tfoot>
-                    <th colspan="8">
-                    {{ $this->objects->links() }}
-                    </th>
-                </tfoot>
+                @if($this->objects->lastPage() > 0)
+                    <tfoot>
+                        <th colspan="8">
+                        {{ $this->objects->links() }}
+                        </th>
+                    </tfoot>
+                @endif
             </x-slot>
             
 

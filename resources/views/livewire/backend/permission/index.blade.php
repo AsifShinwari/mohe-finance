@@ -12,7 +12,7 @@
 
             <x-slot:tools>
                 <div>
-                    @hasDirectPermission('Users Permission - Can Add')
+                    @hasDirectPermission('Permissions - Create')
                     <a wire:navigate href="{{ route('admin.permission.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
                     @endhasDirectPermission
@@ -47,20 +47,20 @@
                         <td>{{ $loop->index+1 }}</td>
                         <td>{{ $permission->name }}</td>
                         <td>
-                            @hasDirectPermission('Users Permission - Can Edit')
+                            @hasDirectPermission('Permissions - Update')
                                 <x-btn-edit wire:navigate route="admin.permission.edit" :param="$permission->id" />
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users Permission - Can Delete')
+                            @hasDirectPermission('Permissions - Delete')
                                 <x-btn-delete wire:confirm="Are You Sure To Delete This Record?" wire:click="delete({{ $permission->id }})" />
                             @endhasDirectPermission
-
                         </td>
                     </tr>
                 @endforeach
             </tbody>
 
             <x-slot:links>
+                @if($this->permissions->lastPage() > 1)
                 <tbody>
                     <tr>
                         <td colspan="3">
@@ -68,6 +68,7 @@
                         </td>
                     </tr>
                 </tbody>
+                @endif
             </x-slot>
 
         </x-backend.shared.table>

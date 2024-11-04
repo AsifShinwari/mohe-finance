@@ -12,8 +12,10 @@
 
             <x-slot:tools>
                 <div>
+                    @hasDirectPermission('Measurements - Create')
                     <a wire:navigate href="{{ route('finance.master.measurement.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus"></i><span class="d-none d-sm-inline-block">&nbsp;{{ __('leftbar.add') }}</span></a>
+                    @endhasDirectPermission
                 </div>
                 <div>
                     <div class="input-group w-100 ml-1">
@@ -46,11 +48,11 @@
                         <td>{{ Settings::trans($obj->username,$obj->pa_username,$obj->pa_username) }}</td>
                         <td class="d-flex justify-content-start">
 
-                            @hasDirectPermission('Users - Can Add')
+                            @hasDirectPermission('Measurements - Update')
                                 <a wire:navigate href="{{ route('finance.master.measurement.edit',$obj->id) }}" class="btn btn-info btn-sm ml-1"><i class="fa fa-edit text-white"></i> </a>
                             @endhasDirectPermission
 
-                            @hasDirectPermission('Users - Can Delete')
+                            @hasDirectPermission('Measurements - Delete')
                                 <button wire:confirm="Are you sure to delete this record?" wire:click="delete({{ $obj->id }})" class="btn btn-danger btn-sm ml-1"><i class="fa fa-trash text-white"></i> </button>
                             @endhasDirectPermission
                         </td>
@@ -59,11 +61,13 @@
             </tbody>
 
             <x-slot:links>
+                @if($this->measurements->lastPage() > 1)
                 <tfoot>
                     <th colspan="8">
                     {{ $this->measurements->links() }}
                     </th>
                 </tfoot>
+                @endif
             </x-slot>
             
 

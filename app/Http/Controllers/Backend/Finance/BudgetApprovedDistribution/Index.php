@@ -31,17 +31,33 @@ class Index extends Controller
         $budget_approveds = BudgetApproved::where('budget_plan_id',$budget_plan_id)->get();//approved budget details
 
         $budget_plan = BudgetPlan::where('id',$budget_plan_id)->first();
-        $b20 = BudgetApprovedDistribution::where('budget_plan_id',$budget_plan_id)->get();
+        $b20 = BudgetApprovedDistribution::where('budget_plan_id',$budget_plan_id)->paginate(8);
+
+        $is_finalized = false;
+        if(isset($b20[0])){
+            $is_finalized = $b20[0]->is_finalized;
+        }
 
         return view('backend.finance.budget-approved-distribution.index',
         compact('budget_plan','b20','code_org_4',
         'code_project_6','code_program_3',
         'code_fund_4','code_location_2',
-        'code_category_1','code_objects_2','budget_approveds'));
+        'code_category_1','code_objects_2','budget_approveds','is_finalized'));
+    }
+
+    public function is_finalized($budget_plan_id){
+        $exist = BudgetApprovedDistribution::where('budget_plan_id',$budget_plan_id)->first();
+        if($exist){
+            return $exist->is_finalized;
+        }
+        return false;
     }
 
     public function store(Request $request){
-       if($request->edit_id==0){ //create new row
+        if($this->is_finalized($request->budget_plan_id)){
+            return response()->json(['result'=>403,'msg'=>'This action is finalized, you are not able to do this action!']); 
+        }
+        if($request->edit_id==0){ //create new row
             $request->validate([
                 'code_cate_1'=>'required',
                 'code_fund_4'=>'required',
@@ -112,7 +128,7 @@ class Index extends Controller
             ]);
         }
 
-        $b20 = BudgetApprovedDistribution::where('budget_plan_id',$request->budget_plan_id)->get();
+        $b20 = BudgetApprovedDistribution::where('budget_plan_id',$request->budget_plan_id)->paginate(8);
         $budget_approveds = BudgetApproved::where('budget_plan_id',$request->budget_plan_id)->get();//approved budget details
         $budget_plan = BudgetPlan::where('id',$request->budget_plan_id)->first();
         $html_major_codes = view('backend.finance.budget-approved-distribution.calculate_major_codes',[
@@ -123,6 +139,38 @@ class Index extends Controller
         $html2 = view('backend.finance.budget-approved-distribution.table_body',['b20'=>$b20])->render();
         
         return response()->json(['result'=>200,'html'=>$html2,'html_major_codes'=>$html_major_codes]);
+    }
+
+    public function filter(Request $request){
+            $f_code_project_6 = $request->f_code_project_6;
+            $f_code_program_3 = $request->f_code_program_3;
+            $f_code_fund_4 = $request->f_code_fund_4;
+            $f_code_loaction = $request->f_code_loaction;
+            $f_code_object_2 = $request->f_code_object_2;
+            $budget_plan_id = $request->budget_plan_id;
+            
+            $b20 = BudgetApprovedDistribution::where('budget_plan_id',$budget_plan_id)
+            ->when($f_code_project_6,function($qry) use($f_code_project_6){
+                $qry->where('code_project_6',$f_code_project_6);
+            })
+            ->when($f_code_program_3,function($qry) use($f_code_program_3){
+                $qry->where('code_program_3',$f_code_program_3);
+            })
+            ->when($f_code_fund_4,function($qry) use($f_code_fund_4){
+                $qry->where('code_fund_4',$f_code_fund_4);
+            })
+            ->when($f_code_loaction,function($qry) use($f_code_loaction){
+                $qry->where('code_loaction',$f_code_loaction);
+            })
+            ->when($f_code_object_2,function($qry) use($f_code_object_2){
+                $qry->where('code_object_2',$f_code_object_2);
+            })->paginate(8);
+
+          $html2 = view('backend.finance.budget-approved-distribution.table_body',[
+            'b20'=>$b20  
+          ])->render();
+        
+         return response()->json(['result'=>200,'html'=>$html2]);
     }
 
     public function get_month($month){
@@ -189,7 +237,7 @@ class Index extends Controller
 
         if($is_deleted){
 
-            $b20 = BudgetApprovedDistribution::where('budget_plan_id',$request->budget_plan_id)->get();
+            $b20 = BudgetApprovedDistribution::where('budget_plan_id',$request->budget_plan_id)->paginate(8);
             $budget_approveds = BudgetApproved::where('budget_plan_id',$request->budget_plan_id)->get();//approved budget details
             $budget_plan = BudgetPlan::where('id',$request->budget_plan_id)->first();
             $html_major_codes = view('backend.finance.budget-approved-distribution.calculate_major_codes',[
@@ -239,8 +287,33 @@ class Index extends Controller
     }
 
     public function print(Request $request){
+        
+        $budget_plan_id = $request->budget_plan_id;
+        $code_project_6 = $request->code_project_6;
+        $code_program_3 = $request->code_program_3;
+        $code_fund_4 = $request->code_fund_4;
+        $code_loaction = $request->code_loaction;
+        $code_object_2 = $request->code_object_2;
+
         $budget_plan = BudgetPlan::where('id',$request->budget_plan_id)->first();
-        $b20 = BudgetApprovedDistribution::where('budget_plan_id',$request->budget_plan_id)->get();
+        $b20 = BudgetApprovedDistribution::where('budget_plan_id',$request->budget_plan_id)
+        ->when($code_project_6,function($qry) use($code_project_6){
+            $qry->where('code_project_6',$code_project_6);
+        })
+        ->when($code_program_3,function($qry) use($code_program_3){
+            $qry->where('code_program_3',$code_program_3);
+        })
+        ->when($code_fund_4,function($qry) use($code_fund_4){
+            $qry->where('code_fund_4',$code_fund_4);
+        })
+        ->when($code_loaction,function($qry) use($code_loaction){
+            $qry->where('code_loaction',$code_loaction);
+        })
+        ->when($code_object_2,function($qry) use($code_object_2){
+            $qry->where('code_object_2',$code_object_2);
+        })
+        ->get();
+
         return view('backend.finance.budget-approved-distribution.print_b20',compact('b20','budget_plan'));
     }
 
@@ -277,7 +350,7 @@ class Index extends Controller
         ->where('code_object_2',$code_object_2)
         ->where('code_program_3',$code_program_3)
         ->where('code_project_6',$code_project_6)
-        ->select(DB::raw('sum(m_1+m_2+m_3+m_4+m_5+m_6+m_7+m_8+m_9+m_10+m_11+m_12) as total'))
+        ->select(DB::raw('(m_1+m_2+m_3+m_4+m_5+m_6+m_7+m_8+m_9+m_10+m_11+m_12) as total'))
         ->first();
 
         $total_spent = 0;
@@ -294,12 +367,16 @@ class Index extends Controller
             $b10_block_amount->code_program_3.'-'.$b10_block_amount->code_fund_4.'-'.$b10_block_amount->code_loaction.'-'
             .\Settings::trans($b10_block_amount->en_prov_name,$b10_block_amount->pa_prov_name,$b10_block_amount->da_prov_name);
 
-            $html = '<div title="B10 Form Coding Block (Org(4), Project Code(5), Program Code(3), Fund Code(4), Province (1))">
+            $html = '<div class="border my-4" title="B10 Form Coding Block (Org(4), Project Code(5), Program Code(3), Fund Code(4), Province (1))">
               <span class="px-1 bg-light text-success" title="'.($b10_block_amount->amount-$total_spent).'">
                 <span class="text-danger" id="code-spent">'.($total_spent).'</span>
                 / <span id="code-amount">'.($b10_block_amount->amount).'</span>
               </span>
               <span class="border-left px-1 bg-secondary text-right">'.$codeing_block.'</span>
+              
+              <span>
+                '.\Settings::trans("Coding Block of B10 for selected","د ب ۱۰ فورم ریکارد د انتخاب شوی ریکارد لپاره","ریکارد ب ۱۰ به ریکارد انتخاب شده").'
+              </span>
             </div>';
 
             return [
@@ -318,5 +395,44 @@ class Index extends Controller
             'spent'=>0,
             'html'=>'',
         ];
+    } 
+
+    public function finalize(Request $req){
+
+        $exist = BudgetApprovedDistribution::where('budget_plan_id',$req->budget_plan_id)->first();
+        $is_finalized = false;
+        if($exist){
+            BudgetApprovedDistribution::where('budget_plan_id',$req->budget_plan_id)
+            ->update([
+                'is_finalized'=>!$exist->is_finalized,
+            ]);
+            
+            if(!$exist->is_finalized){
+                $is_finalized = true;
+            }
+            
+            $b20 = BudgetApprovedDistribution::where('budget_plan_id',$req->budget_plan_id)
+            ->orderBy('code_loaction','asc')
+            ->orderBy('budget_approved_distributions.id','desc')
+            ->paginate(8);
+
+            $html = view('backend.finance.budget-approved-distribution.table_body',[
+                'b20'=>$b20  
+              ])->render();
+
+            return response()->json([
+                'code'=>200,
+                'type'=>'success',
+                'msg'=>'Operation completed successfully',
+                'html'=>$html,
+                'is_finalized'=>$is_finalized,
+            ]);
+        }else{
+            return response()->json([
+                'code'=>500,
+                'type'=>'error',
+                'msg'=>'No any record found.',
+            ]);
+        }
     }
 }

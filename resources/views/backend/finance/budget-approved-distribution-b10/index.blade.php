@@ -12,25 +12,19 @@
 @section('contents')
   <x-backend.shared.page-container :show_card="true">
    
-        <div class="d-flex justify-content-around" id="major-codes-container">  
+        <div class="d-flex justify-content-around p-3" id="major-codes-container">  
             @include('backend.finance.budget-approved-distribution-b10.calculate_major_codes')
         </div>
-        <hr>
-        <div class="p-0 pl-1 m-2">
-          <button class="btn btn-primary" id="add-btn" type="button">
-            <i class="fa fa-plus"></i>
-            {{ Settings::trans('Add','اضافه کړئ','اضافه کنید') }}
-          </button>
-          <a class="btn btn-secondary" id="print-btn" data-target="#print-modal" data-toggle="modal"
-          href="#">
-            <i class="fa fa-print"></i>
-            {{ Settings::trans('Print','پرنټ فورم ب-۱۰','پرنت فورم ب-۱۰') }}
-          </a>
-        </div>
-
         
+
+        <form id="search-frm">
+          <div class="row bg-light border m-0 py-4 mt-3" id="filter-container">  
+              @include('backend.finance.budget-approved-distribution-b10.filter')
+          </div>
+        </form>
+
     <form action="#" method="get" id="create-form">
-    <div class="row mb-2 d-none" id="create-box">
+    <div class="row m-0 mt-4 bg-light border p-4 d-none" id="create-box">
         <input type="hidden" name="budget_plan_id" id="budget_plan_id" value="{{ $budget_plan->id }}">
         <input type="hidden" name="edit_id" id="edit_id" value="0">
         <x-select 
@@ -41,7 +35,6 @@
           :list="$code_org_3" 
           :is_livewire='0'
           value="ministry_code"
-          text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
           text="ministry_code"
           default="{{ Settings::trans('Organization-Code(3)','فرعي اداره(۳)','اداره فرعی(۳)') }}" 
            /> 
@@ -54,7 +47,6 @@
           :list="$code_project_6" 
           :is_livewire='0'
           value="code"
-          text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
           text="code"
           default="{{ Settings::trans('Project Code(6)','د پروژی کوډ(۶)','کود پروژه(۶)') }}" /> 
 
@@ -66,7 +58,6 @@
           :list="$code_program_3" 
           :is_livewire='0'
           value="program_code"
-          text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
           text="program_code"
           default="{{ Settings::trans('Program Code(3)','د برنامی کوډ(۳)','کود برنامه(۳)') }}" /> 
 
@@ -78,7 +69,6 @@
           :list="$code_fund_4" 
           :is_livewire='0'
           value="sub_fund_code"
-          text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
           text="sub_fund_code"
           default="{{ Settings::trans('Fund Code(4)','د وجه کوډ(۴)','کود وجه(۴)') }}" /> 
 
@@ -103,7 +93,6 @@
           :list="$code_objects_2" 
           :is_livewire='0'
           value="major_code"
-          text2="{{Settings::trans('en_desc','pa_desc','da_desc')}}"
           text="major_code" />
 
         <x-input 
@@ -136,7 +125,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-sm table-bordered" id="main-tbl">
+        <table class="table table-sm table-bordered mb-0" id="main-tbl">
             <thead id="tbl-head">
                 <th class="bg-light">{{ Settings::trans('Organization (3)','اداره (۳)','اداره (۳)') }}</th>
                 <th class="bg-light">{{ Settings::trans('Project Code(6)','د پروژی کوډ (۶)','کود پروژه (۶)') }}</th>
@@ -169,6 +158,8 @@
       $('#close-btn').click(function () {
         $('#create-box').addClass('d-none');
         $('#add-btn').removeClass('d-none');
+        $('#search-frm').removeClass('d-none');
+        $('#print-btn').removeClass('d-none');
       });
 
       $('#add-btn').click(function () {
@@ -190,6 +181,8 @@
 
         $('#create-box').removeClass('d-none');
         $('#add-btn').addClass('d-none');
+        $('#search-frm').addClass('d-none');
+        $('#print-btn').addClass('d-none');
       });
 
       $('#create-form').submit(function(e){
@@ -218,6 +211,7 @@
 
               $('#tbl-body').remove();
               $('#tbl-foot').remove();
+              
               $('#tbl-head').after(res.html);
               $('#major-codes-container').html(res.html_major_codes);
               $('#month').val('').change();
@@ -226,6 +220,8 @@
               if($('#edit_id').val()!='0'){
                 $('#create-box').addClass('d-none');
                 $('#add-btn').removeClass('d-none');
+                $('#search-frm').removeClass('d-none');
+                $('#print-btn').removeClass('d-none');
               }
 
               toastr['success']('Record Added Successfully!');
@@ -294,6 +290,7 @@
               if(res.result==200){
                 $('#tbl-body').remove();
                 $('#tbl-foot').remove();
+                
                 $('#tbl-head').after(res.html);
                 $('#major-codes-container').html(res.html_major_codes);
                 toastr['success'](res.msg);
@@ -337,7 +334,8 @@
 
               $('#create-box').removeClass('d-none');
               $('#add-btn').addClass('d-none');
-
+              $('#search-frm').addClass('d-none');
+              $('#print-btn').addClass('d-none');
               loader('hide');
             },
             error:function(err){

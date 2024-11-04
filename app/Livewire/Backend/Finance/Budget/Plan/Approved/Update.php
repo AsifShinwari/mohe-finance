@@ -60,6 +60,20 @@ class Update extends Component
         session()->flash('success','Updated successfully!');
     }
 
+    public function finalized($budget_plan_id,$value){
+        BudgetApproved::where('budget_plan_id', $budget_plan_id)->update([
+            'is_finalized' => $value,
+        ]);
+        session()->flash('success',\Settings::trans('Finalized Successfully!','عملیه په بریالیتوب ترسره شوه.','با موفقیت انجام شد.'));
+        // return redirect()->back();
+    }
+
+    public function is_finalized(){
+        if(isset($this->get_approveds()[0])){
+            return $this->get_approveds()[0]->is_finalized;
+        }
+    }
+
     public function render()
     {
         return view('livewire.backend.finance.budget.plan.approved.update')
